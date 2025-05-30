@@ -282,26 +282,6 @@ contract CrossChainBalanceFetcher is OAppRead, IOAppMapper, IOAppReducer {
     }
 
     /**
-     * @notice Adds a new supported chain
-     * @param _eid The endpoint ID of the chain
-     * @param _confirmations The number of confirmations required
-     * @param _name The name of the chain
-     */
-    function addSupportedChain(uint32 _eid, uint16 _confirmations, string calldata _name) external onlyOwner {
-        supportedChains.push(ChainConfig(_eid, _confirmations, _name));
-    }
-
-    /**
-     * @notice Removes a supported chain
-     * @param _index The index of the chain to remove
-     */
-    function removeSupportedChain(uint256 _index) external onlyOwner {
-        require(_index < supportedChains.length, "Invalid index");
-        supportedChains[_index] = supportedChains[supportedChains.length - 1];
-        supportedChains.pop();
-    }
-
-    /**
      * @notice Returns balances in JSON string format for ease of off-chain parsing
      */
     function getBalancesJson(address _account) external view returns (string memory json) {
