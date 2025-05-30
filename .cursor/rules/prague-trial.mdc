@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+have always in consideration the [PRD.md](mdc:PRD.md) file to have context of what we are working on.
+
+stack is nextjs 14.2.25, tailwind css, mongoDB as database.
+
