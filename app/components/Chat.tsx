@@ -4,9 +4,17 @@ import WalletInput from "./WalletInput";
 import SimplePrompt from "./SimplePrompt";
 import PortfolioOverview from "./PortfolioOverview";
 import { TopHoldingsChart } from "./TopHoldingsChart";
+import { NftHoldings } from "./NFTHoldings";
+import { DefiInteractions } from "./DefiInteractions";
 interface Props {
   addressSessionId: string;
 }
+
+const exampleNftData = [
+  { name: "CryptoPunks", icon: "🧑‍🎤", count: 2 },
+  { name: "Bored Apes", icon: "🐵", count: 1 },
+  { name: "Art Blocks", icon: "🎨", count: 3 },
+];
 
 const Chat = ({ addressSessionId }: Props) => {
   const [answer, setAnswer] = useState("");
@@ -231,6 +239,8 @@ const Chat = ({ addressSessionId }: Props) => {
           />
 
           <TopHoldingsChart />
+          <NftHoldings data={exampleNftData} />
+          <DefiInteractions />
         </div>
         {/* <form
           className='flex flex-col gap-4 min-w-[600px]'

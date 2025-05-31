@@ -2,7 +2,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { BarChart3 } from "lucide-react";
 
 interface ChartDataItem {
   name: string;
@@ -29,11 +28,12 @@ export default function PortfolioOverview({
 
   return (
     <Card className="bg-white border border-gray-200 shadow-sm rounded-2xl">
-      <CardContent className="p-8 flex flex-col items-center justify-center min-h-[450px]">
-        {/* Title with Icon */}
-        <div className="w-full flex items-center text-left mb-2">
-          <BarChart3 className="w-6 h-6 text-purple-500 mr-2" />
-          <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
+      <CardContent className="p-8 flex flex-col items-center justify-center min-h-[500px]">
+        {/* Title */}
+        <div className="w-full text-left mb-2">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Portfolio Overview
+          </h2>
         </div>
         {/* Donut Chart */}
         <div className="w-56 h-56 flex items-center justify-center mb-2">

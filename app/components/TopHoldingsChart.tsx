@@ -54,10 +54,9 @@ export function TopHoldingsChart() {
   return (
     <Card className="bg-white border border-gray-200 shadow-sm rounded-2xl min-h-[500px] flex flex-col">
       <CardHeader>
-        <div className="w-full flex items-center text-left mb-2">
-          <TrendingUp className="w-6 h-6 text-blue-500 mr-2" />
-          <h2 className="text-2xl font-bold text-gray-900">Top Holdings</h2>
-        </div>
+        <h2 className="text-2xl font-bold text-gray-900 text-left mb-2">
+          Top Holdings
+        </h2>
       </CardHeader>
       <CardContent className="px-6 pb-6 pt-2 flex-1 flex flex-col">
         {/* Bar Chart */}
