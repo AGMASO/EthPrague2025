@@ -5,13 +5,16 @@ import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import WalletHeader from "./WalletHeader";
 import LoadingSpinner from "./LoadingSpinner";
+import DashboardHeader from "./DashboardHeader";
+import { NftHoldings } from "./NFTHoldings";
+import PortfolioOverview from "./PortfolioOverview";
+import { TopHoldingsChart } from "./TopHoldingsChart";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Send, Bot, User, Wallet, Shield, Sparkles } from "lucide-react";
 import SimplePrompt from "./SimplePrompt";
-import PortfolioOverview from "./PortfolioOverview";
 import { formatTokenData } from "@/utils/tokenParser";
 // import TokenHoldings from "./token-holdings"
 // import NFTHoldings from "./nft-holdings"
@@ -158,6 +161,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
         const dataTokensFetched = await responseTokens.json();
         console.log("Fetched token data:", dataTokensFetched);
+        console.log("Token Data: ", dataTokensFetched);
         setDataTokens(dataTokensFetched);
 
         const dataTxsFetched = await responseTxs.json();
@@ -169,11 +173,11 @@ export default function ChatInterface({ addressSessionId }: Props) {
         setDataChartCoins(dataChartCoins);
 
         const dataNFTs = await responseNFTs.json();
-        console.log(dataNFTs);
-        setDataNFTs(dataNFTs);
+        console.log("NFT Data: ", dataNFTs);
+        setDataNFTs(dataNFTs.items);
 
         const dataNFTCollections = await responseNFTCollections.json();
-        console.log(dataNFTCollections);
+        console.log("NFT Collection Data: ", dataNFTCollections);
         setDataNFTCollections(dataNFTCollections);
 
         //!Version llamada con todo el json y solo usar ChatGpt para configurar mensaje.
@@ -329,10 +333,12 @@ export default function ChatInterface({ addressSessionId }: Props) {
         </div>
       ) : (
         <>
-          {/* Messages + Portfolio + Answer */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-44">
-            {/* ✅ Portfolio Overview */}
-            <div className="w-full max-w-3xl mx-auto">
+          <div className="max-w-6xl mx-auto w-full space-y-10">
+            {/* Dashboard Header */}
+            <DashboardHeader />
+
+            {/* Dashboard Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {!Array.isArray(dataTokens) ? (
                 <div className="text-center text-gray-400">
                   Loading token data...
@@ -346,7 +352,15 @@ export default function ChatInterface({ addressSessionId }: Props) {
               )}
             </div>
 
-            {/* ✅ Assistant Answer */}
+            {/* Token Holdings */}
+            <TopHoldingsChart tokenData={dataTokens} />
+
+            {/* Bottom Section */}
+            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <NftHoldings data={dataNFTs} />
+            </div>
+
+            {/* Assistant Answer Bubble */}
             {answer && (
               <div className="flex gap-3 justify-start p-4">
                 <Avatar className="w-8 h-8 bg-purple-100">
@@ -365,7 +379,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
               </div>
             )}
 
-            {/* ✅ Typing Indicator */}
+            {/* Typing Indicator */}
             {isTyping && (
               <div className="flex gap-3 justify-start">
                 <Avatar className="w-8 h-8 bg-purple-100">
@@ -375,13 +389,15 @@ export default function ChatInterface({ addressSessionId }: Props) {
                 </Avatar>
                 <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
                     <div
                       className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}></div>
+                      style={{ animationDelay: "0.1s" }}
+                    />
                     <div
                       className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}></div>
+                      style={{ animationDelay: "0.2s" }}
+                    />
                   </div>
                 </div>
               </div>
@@ -390,8 +406,26 @@ export default function ChatInterface({ addressSessionId }: Props) {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* ✅ Bottom Suggestions + Input */}
-          <div className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t">
+          {/* Fixed Bottom Section */}
+          <div className="bottom-0 left-0 right-0 z-50">
+            <div className="px-2 py-3">
+              <div className="max-w-3xl mx-auto">
+                <form onSubmit={handleSubmit} className="flex gap-3">
+                  <Input
+                    placeholder="Ask me anything about this wallet..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    className="flex-1 h-12 rounded-xl bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500 pr-12 shadow-sm"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={!inputMessage.trim() || isTyping}
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl">
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </form>
+              </div>
+            </div>
             {answer && (
               <div className="px-4 py-4 border-b border-gray-100">
                 <div className="max-w-4xl mx-auto">
@@ -410,25 +444,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
                 </div>
               </div>
             )}
-
-            <div className="px-4 py-6">
-              <div className="max-w-3xl mx-auto">
-                <form onSubmit={handleSubmit} className="flex gap-3">
-                  <Input
-                    placeholder="Ask me anything about this wallet..."
-                    value={inputValue}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    className="flex-1 h-12 rounded-xl border-gray-300 focus:border-purple-500 focus:ring-purple-500 pr-12 shadow-sm"
-                  />
-                  <Button
-                    type="submit"
-                    disabled={!inputValue.trim() || isTyping}
-                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl">
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </form>
-              </div>
-            </div>
           </div>
         </>
       )}
