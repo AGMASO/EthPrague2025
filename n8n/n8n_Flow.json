@@ -1,0 +1,564 @@
+{
+  "name": "first Flow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "39430311-e25e-4993-a439-f043900c2f4b",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1560,
+        240
+      ],
+      "id": "43397a7c-a0d0-48dd-aa06-796d7f6551b7",
+      "name": "Webhook",
+      "webhookId": "39430311-e25e-4993-a439-f043900c2f4b"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        500,
+        280
+      ],
+      "id": "727852f7-31ca-40da-9880-866ecf74bec3",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SessionID for simpleMemory: {{ $('Webhook').item.json.body.addressSessionId }}\n\ndataGeneral: {{ JSON.stringify($('Webhook').item.json.body.dataGeneral, null, 2) }}\ndataToken: {{ JSON.stringify($('Webhook').item.json.body.dataTokens, null, 2) }}\ndataTxs: {{ JSON.stringify($json.resumenTxs, null, 2) }}\n\n",
+        "options": {
+          "systemMessage": "=You are a professional blockchain analyst assistant integrated into an automated system. You receive two JSON inputs:\n\n- `dataGeneral`: General metadata and behavioral indicators for a given Ethereum address.\n- `dataTokens`: Token holdings and instances associated with that address.\n- `dataTxs`: Txs done by this address\n\nYour job is to generate a comprehensive, well-written and human-readable report that explains what this address is, what it does, and what it holds. Your report must:\n\n1. Start with a **natural-language summary** that gives a clear, insightful explanation of the address. Avoid technical jargon. Pretend you're writing for a smart person who is not a developer.\n2. Follow the summary with a **structured explanation**, using headings and bullet points to describe:\n    - Token holdings and balances\n    - Interesting patterns or rare assets\n    - Tags, metadata, and known labels\n    - Contract verification status and any risk indicators\n    - POAPs or NFTs, if any\n3. Do not show raw JSON or code. Instead, translate the structured data into flowing, readable paragraphs.\n\n---\n\nNow, if the user asks a more specific question that refers to a **particular transaction**, do the following:\n\n- First, check the tools available inside the node `blockscout tools1` in the MCP Tools system.\n- Determine which tool is relevant to retrieve the missing information (e.g. transaction details, logs, decoded events, etc.).\n- Then, call the required tool by invoking the corresponding action in the `execute tools` node.\n- Once you have the additional data, return a new full answer, including:\n    1. A clear **summary explanation** of the transaction in natural language.\n    2. A structured breakdown of the transaction data, including sender, receiver, value, gas usage, function called (if applicable), and token transfers.\n\nThroughout your answer, keep your language **clear, readable, and engaging**. Format your output for humans, not for machines.\n\nYou are part of a conversational assistant that must produce high-quality, self-contained blockchain reports."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        -100
+      ],
+      "id": "19238ef6-cc1b-4e7b-9522-74d646caf9b7",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        140
+      ],
+      "id": "f27cbfae-a5b9-4f75-9757-fc5d49168b2d",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ixsvXxpeHBMotDtj",
+          "name": "OpenAi API DEMO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "This node executes a specific Blockscout analysis tool selected from the list previously obtained in the `blockscout tools1` node. It uses the MCP Client to run the selected method and fetch detailed on-chain data (e.g. transaction details, decoded logs, token movements, contract info). Use this node only after choosing the appropriate tool and providing the required parameters.",
+        "operation": "executeTool",
+        "toolName": "={{ $fromAI(\"tool\", \"the tool selected\")}}",
+        "toolParameters": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tool_Parameters', ``, 'json') }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        280,
+        140
+      ],
+      "id": "0e6b6b6d-2568-4e06-9f6d-848822bf9d4f",
+      "name": "blockscout execute1",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "7LlVjcCb80hkimDt",
+          "name": "blockscout tools"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "This node retrieves the list of available on-chain analysis tools related to addresses and transactions using the Blockscout API, connected through MCP. These tools include methods for inspecting specific transactions, logs, token transfers, contract metadata, and more. Use this node first to explore available tools before choos"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        180,
+        140
+      ],
+      "id": "8a866858-4977-420b-b20c-c17b931bcab9",
+      "name": "blockscout tools1",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "7LlVjcCb80hkimDt",
+          "name": "blockscout tools"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "65c56893-880f-4ed5-a882-87f018451ddd",
+              "leftValue": "={{ $json.body.dataGeneral }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a2c6add9-2a02-458e-871c-5005a1c4c4b7",
+              "leftValue": "={{ $json.body.dataTokens }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1020,
+        240
+      ],
+      "id": "20308e5f-4b11-49dc-9a29-6e3bf3fe889c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SessionID : {{ $json.sessionId }}\n\nall the chats saved and taht you need to retrive information: {{ $json.messages }}\n\ninput of the user: {{ $('Webhook').item.json.body.message }}\n\n",
+        "options": {
+          "systemMessage": "=You are a blockchain analysis assistant integrated into a multi-step system.\nThe user is continuing a previous investigation involving a blockchain address or transaction. Context is loaded from MongoDB and includes token balances, transaction summaries, known counterparties, and behavioral patterns.\n\nYou MUST ALWAYS follow these steps in strict order:\n\nStep 1: Restore Context\nLoad the session data from MongoDB using the provided session ID.\n\nExtract relevant details:\n\nGeneral info about the address\n\nToken balances\n\nPast transactions\n\nCounterparty interactions\n\nUser preferences\n\nStep 2: Understand the Question\nIdentify what the user is asking:\n\nIs it about price feed data (e.g., current or historical price of tokens like BTC, ETH)?\n\nOr is it about transaction history, token behavior, address roles, or patterns?\n\nStep 3: Choose the Right Tool\nIf the question is about price feeds, go to the 1inch tools list, find the appropriate tool, and execute it via 1inch execute.\n\nFor all other blockchain analysis questions, use the blockscout tools1 list to identify the correct tool, and run it with blockscout execute1.\n\nStep 4: Fetch New On-Chain Data (if needed)\nIf the answer cannot be derived from the MongoDB memory alone:\n\nCall the selected tool with the right parameters.\n\nWait for results before proceeding.\n\nStep 5: Answer the User\nProvide a clear and structured summary.\n\nInclude examples (e.g., tx hashes, token symbols, address tags) where useful.\n\nHighlight anomalies, recurring patterns, or risks when relevant.\n\nAvoid raw JSON unless requested.\n\nFormat with clarity: use headings, bullet points, and spacing.\n\nImportant:\n\nFor price feed data, always check Flare Tools.\n\nFor all other insights, use Blockscout Tools.\n\nBe concise, helpful, and technically clear."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -240,
+        340
+      ],
+      "id": "13b73fa5-344d-4683-813d-8317650e8764",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        580
+      ],
+      "id": "a07517f1-591d-4aa3-ae01-b29fa6d7efc5",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "ixsvXxpeHBMotDtj",
+          "name": "OpenAi API DEMO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const txs = $json.body.dataTxs.items;\n\nconst resumenPorMetodo = {}; // JavaScript puro, sin tipos\n\nfor (const tx of txs) {\n  const metodo = tx.method || \"unknown\";\n  \n  if (!resumenPorMetodo[metodo]) {\n    resumenPorMetodo[metodo] = {\n      count: 0,\n      examples: []\n    };\n  }\n\n  resumenPorMetodo[metodo].count += 1;\n\n  if (resumenPorMetodo[metodo].examples.length < 3) {\n    resumenPorMetodo[metodo].examples.push({\n      hash: tx.hash,\n      from: tx.from_address,\n      to: tx.to_address,\n      value: tx.value,\n      timestamp: tx.block_signed_at\n    });\n  }\n}\n\nreturn [\n  {\n    json: {\n      resumenTxs: resumenPorMetodo\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        40
+      ],
+      "id": "82e0eba2-5cc5-4495-a128-f124fa0548d1",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.addressSessionId }}",
+        "databaseName": "blockscoutInspector"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1,
+      "position": [
+        60,
+        140
+      ],
+      "id": "e6130747-638e-4eff-9be7-4f80582e4cb1",
+      "name": "MongoDB Chat Memory",
+      "credentials": {
+        "mongoDb": {
+          "id": "cYDgjF9RUB3nsYcn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.addressSessionId }}",
+        "databaseName": "blockscoutInspector"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        580
+      ],
+      "id": "f6090b56-3ccd-4d8c-9fdd-e064dfee1ef3",
+      "name": "MongoDB Chat Memory1",
+      "credentials": {
+        "mongoDb": {
+          "id": "cYDgjF9RUB3nsYcn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "collection": "n8n_chat_histories",
+        "options": {},
+        "query": "={\n  \"sessionId\": \"{{ $('Webhook').item.json.body.addressSessionId }}\"\n}\n"
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        320
+      ],
+      "id": "111ba2e7-7e6d-461e-b1fa-f4fbc3e4a386",
+      "name": "MongoDB",
+      "credentials": {
+        "mongoDb": {
+          "id": "cYDgjF9RUB3nsYcn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "This node retrieves the list of available on-chain analysis tools related to addresses and transactions using the Blockscout API, connected through MCP. These tools include methods for inspecting specific transactions, logs, token transfers, contract metadata, and more. Use this node first to explore available tools before choos"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        0,
+        640
+      ],
+      "id": "30e14d03-b0de-498e-b1f9-9da540cc26ce",
+      "name": "blockscout tools4",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "7LlVjcCb80hkimDt",
+          "name": "blockscout tools"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "This node executes a specific Blockscout analysis tool selected from the list previously obtained in the `blockscout tools1` node. It uses the MCP Client to run the selected method and fetch detailed on-chain data (e.g. transaction details, decoded logs, token movements, contract info). Use this node only after choosing the appropriate tool and providing the required parameters.",
+        "operation": "executeTool",
+        "toolName": "={{ $fromAI(\"tool\", \"the tool selected\")}}",
+        "toolParameters": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tool_Parameters', ``, 'json') }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        140,
+        640
+      ],
+      "id": "83bc5fda-a8d8-41db-9073-c50ccf57aacd",
+      "name": "blockscout execute4",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "7LlVjcCb80hkimDt",
+          "name": "blockscout tools"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "call to read the tools avalaible in 1inch "
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        300,
+        640
+      ],
+      "id": "e6e861f8-0d96-485b-ad6f-8773706681f6",
+      "name": "1inch list tools",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "C421lv6zsYkiYO2d",
+          "name": "1inch mcp"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeTool",
+        "toolName": "={{ $fromAI(\"tool\", \"the tool selected\")}}",
+        "toolParameters": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tool_Parameters', ``, 'json') }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        560,
+        620
+      ],
+      "id": "fd2ae23f-4c16-4c72-b2d0-6fdf87ac5e0b",
+      "name": "1inch execute tools",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "C421lv6zsYkiYO2d",
+          "name": "1inch mcp"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "blockscout execute1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "blockscout tools1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MongoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "blockscout tools4": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "blockscout execute4": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1inch list tools": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1inch execute tools": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9b7e7dcb-1319-4e7e-a7ed-423001bf0bc7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6b678d3c31f46e276df48d530ac1c7f5c0957f00b4b5eceb0cbd2884ab194c14"
+  },
+  "id": "pJRdBXREHsryWANO",
+  "tags": []
+}
