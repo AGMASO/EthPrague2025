@@ -61,11 +61,11 @@ export default function NavBarMain() {
             className='flex items-center relative z-40 cursor-pointer'
           >
             <div className='flex items-center'>
-              <span className='text-xl pl-1 font-light text-[#1184B6] font-montserrat'>
-                Blockscout
+              <span className='text-2xl pl-1 font-light text-[#a149f2] font-montserrat'>
+                Inspecti
               </span>
-              <span className='text-xl font-bold text-[#1184B6] font-montserrat'>
-                Inspector
+              <span className='text-2xl font-bold text-[#a149f2] font-montserrat'>
+                Fi
               </span>
             </div>
           </Link>
