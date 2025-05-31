@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import React from "react";
 import randomColor from "randomcolor";
@@ -40,13 +40,12 @@ export default function PortfolioOverview({
 
   return (
     <Card className="bg-white border border-gray-200 shadow-sm rounded-2xl">
-      <CardContent className="p-8 flex flex-col items-center justify-center min-h-[500px]">
-        {/* Title */}
-        <div className="w-full text-left mb-2">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Portfolio Overview
-          </h2>
-        </div>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-2xl font-bold text-gray-900">
+          Portfolio Overview
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-6 pb-6 pt-2 flex flex-col items-center justify-center min-h-[500px]">
         {/* Donut Chart */}
         <div className="w-56 h-56 flex items-center justify-center mb-2">
           <ResponsiveContainer width="100%" height="100%">
