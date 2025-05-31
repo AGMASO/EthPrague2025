@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InspectiFI 
+## EthPragueGlobal-2025
 
-## Getting Started
+## What Is InspectiFI?
+InspectiFI is a **conversational blockchain analytics assistant**.  
+It lets anyone—regardless of technical depth—ask natural-language questions about addresses, transactions, or price feeds and receive **concise, human-readable answers** backed by live on-chain data.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Thanks to an **MCP (Model Context Protocol) server layer** and Blockscout + 1Inch we connect LLM prompts to real-time data APIs, eliminating the lag and uncertainty of stale snapshots.  
+We can solve typical question even tricky ones, get surprised with the result!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* “What tokens were involved in Tx hash `0x…`?”
+* “Make me a full report about this address `0x…`?”
+* “What tokens were involved in hash `0x…`?”
+* “Give me the current ETH, LINK, WTBC prices”
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Extra Fun Feature: We use Vlayer to proof if the address that you are researching is Whale or not, If you find one, you get a nice Badge!!!
 
-## Learn More
+## Key Features
 
-To learn more about Next.js, take a look at the following resources:
+| # | Feature | Why It Matters |
+|---|---------|----------------|
+| **1** | **Natural-language UX** –     |Make it easy to    newcomers to understand transactions, addresses activities nad much more |
+| **2** | **Live MCP data connectors** | Guarantees answers are based on *current* on-chain data or oracle data, not cached indexes. |
+| **3** | **Address & Txn Intelligence** | Generates rich reports (balances, token positions, fee spend, risk heuristics). |
+| **4** | **Price-Feed Insights** | Pulls pricfeeds of many Tokens such as ETH, USDC, WBTC and more from on-chain 1inch oracles. |
+| **5** | **Extensible Tooling** | Many of possibilities to continue growing adding new chains and more |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+### Technology Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Layer | What We Use | Notes |
+|-------|-------------|-------|
+| **LLM Orchestration** | **Model Context Protocol** and **n8n** for automation | Thanks to n8n server we run AI agents that have context of APIs sets such as Blockscout or 1Inch |
+| **Blockchain Data** | **Blockscout MCP** – <https://www.npmjs.com/package/@0xagmaso/blockscout-mcp> | Indexed address & txn data for MAINNET chain with Blockscout. |
+| **Price Feeds** | **Flare MCP** – <https://github.com/AGMASO/flare-mcp> | Fetches FTSO V2 feeds (FLR, BTC, ETH / USD). |
+| **1inch MCP** – |https://github.com/figtracer/1inch-mpc-server/tree/master | DeFi token prices via the 1inch Fusion oracle. |
+| **Frontend**                          || React + shadcn/ui + Tailwind  |
+| **Backend** || MongoDB | 
+---
+![alt text](<assets/images/Screenshot 2025-05-31 at 22.18.56.png>)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Future Work
+1. Multi-chain connection for MCPs. 
+2. Use Vlayer to prove more data from addresses.
+3. Serve Charts dynamically using MCPs about real time on-chain data.
+4. Use MCPs connections with Swap aggregators to get best possible Swap oportunity
+
+## Hackathon Submission
+
+| Field | Entry |
+|-------|-------|
+| **PROJECT NAME** | InspectiFI |
+| **DESCRIPTION** | Conversational analytics assistant delivering real-time blockchain intelligence through MCP-powered tools. |
+| **DISCORD / TELEGRAM** | Discord: `0xagmaso, figtracer, christopherus, dmdm`  |
+| **REPOSITORY** | https://github.com/AGMASO/EthPrague2025 |
+| **VIDEO DEMO / SLIDES** | Video: `<link>` |
+| **DEPLOYMENTS** | <br>InspectiFI: `0x…`<br>BlockscoutMCP: https://www.npmjs.com/package/@0xagmaso/blockscout-mcp <br>FlareMCP: https://github.com/AGMASO/flare-mcp <br>1InchMCP:     https://github.com/figtracer/1inch-mpc-server/tree/master
+
+---
+
+## 🤝 Contributing
+
+PRs are welcome! 
+Please open an issue for feature requests or bugs.
+
