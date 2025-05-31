@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DataCharts from "./DataCharts";
 import WalletInput from "./WalletInput";
 import SimplePrompt from "./SimplePrompt";
+import PortfolioOverview from "./PortfolioOverview";
 interface Props {
   addressSessionId: string;
 }
@@ -203,22 +204,29 @@ const Chat = ({ addressSessionId }: Props) => {
   }
 
   return (
-    <div className='w-full flex flex-col items-center justify-center min-h-[50vh]'>
+    <div className="w-full flex flex-col items-center justify-center min-h-[50vh]">
       <DataCharts
         tokens={dataTokens}
         transactions={dataTxs}
         addressInfo={dataGeneral}
         chartCoins={dataChartCoins}
       />
-      <div className='w-full max-w-4xl flex flex-col gap-4'>
+      <div className="w-full max-w-4xl flex flex-col gap-4">
         {answer && (
           <div
-            className='p-4 rounded-md border border-gray-300 w-full break-words max-w-full overflow-x-auto'
+            className="p-4 rounded-md border border-gray-300 w-full break-words max-w-full overflow-x-auto"
             dangerouslySetInnerHTML={{ __html: answer }}
           />
         )}
 
-       <SimplePrompt />
+        <SimplePrompt />
+        <PortfolioOverview
+          data={[
+            { name: "BTC", value: 14000, color: "#facc15" },
+            { name: "ETH", value: 12000, color: "#8b5cf6" },
+            { name: "SOL", value: 6000, color: "#22d3ee" },
+          ]}
+        />
 
         {/* <form
           className='flex flex-col gap-4 min-w-[600px]'
