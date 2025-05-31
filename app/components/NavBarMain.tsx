@@ -41,7 +41,7 @@ export default function NavBarMain() {
       <header
         className={`
           fixed top-0 left-0 right-0 w-full
-          flex items-center justify-between p-4
+          flex items-center justify-between p-6
           transition-all duration-500 ease-in-out z-30
           ${
             isVisible
@@ -61,10 +61,10 @@ export default function NavBarMain() {
             className='flex items-center relative z-40 cursor-pointer'
           >
             <div className='flex items-center'>
-              <span className='text-2xl pl-1 font-light text-[#a149f2] font-montserrat'>
+              <span className='text-3xl pl-1 font-light text-[#a149f2] font-montserrat'>
                 Inspecti
               </span>
-              <span className='text-2xl font-bold text-[#a149f2] font-montserrat'>
+              <span className='text-3xl font-bold text-[#a149f2] font-montserrat'>
                 Fi
               </span>
             </div>

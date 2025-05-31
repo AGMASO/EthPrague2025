@@ -17,7 +17,7 @@ export default function Header({
   walletAddress = "0x3A5D...8c40",
 }: HeaderProps) {
   return (
-    <div className="container mx-auto px-4 -mt-28">
+    <div className="container mx-auto px-4 -mt-23">
       <div className="text-center mb-12">
         {/* Logo */}
         <div className="flex justify-center mb-6">

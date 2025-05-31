@@ -42,6 +42,8 @@ export default function ChatInterface({ addressSessionId }: Props) {
   const [dataTokens, setDataTokens] = useState<any>(null);
   const [dataTxs, setDataTxs] = useState<any>(null);
   const [dataChartCoins, setDataChartCoins] = useState<any>(null);
+  const [dataNFTs, setDataNFTs] = useState<any>(null);
+  const [dataNFTCollections, setDataNFTCollections] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // States by me
@@ -108,6 +110,24 @@ export default function ChatInterface({ addressSessionId }: Props) {
           }
         );
 
+        const responseNFTs = await fetch(
+          `https://eth.blockscout.com/api/v2/addresses/${addressExtracted}/nft`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+
+        const responseNFTCollections = await fetch(
+          `https://eth.blockscout.com/api/v2/addresses/${addressExtracted}/nft/collections`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+
         if (!responseGeneral.ok) {
           throw new Error("Error en el servidor");
         }
@@ -119,6 +139,12 @@ export default function ChatInterface({ addressSessionId }: Props) {
           throw new Error("Error to get transactions");
         }
         if (!responseChartCoins.ok) {
+          throw new Error("Error to get chart coins");
+        }
+        if (!responseNFTs.ok) {
+          throw new Error("Error to get chart coins");
+        }
+         if (!responseNFTCollections.ok) {
           throw new Error("Error to get chart coins");
         }
 
@@ -137,6 +163,14 @@ export default function ChatInterface({ addressSessionId }: Props) {
         const dataChartCoins = await responseChartCoins.json();
         console.log(dataChartCoins);
         setDataChartCoins(dataChartCoins);
+
+        const dataNFTs = await responseNFTs.json();
+        console.log(dataNFTs);
+        setDataNFTs(dataNFTs);
+
+        const dataNFTCollections = await responseNFTCollections.json();
+        console.log(dataNFTCollections);
+        setDataNFTCollections(dataNFTCollections);
 
         //!Version llamada con todo el json y solo usar ChatGpt para configurar mensaje.
         try {
