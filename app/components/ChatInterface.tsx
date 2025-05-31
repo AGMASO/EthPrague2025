@@ -527,7 +527,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
                   <p>
                     {walletStatus.hasActiveWallet ? "✅ Active" : "⚠️ Inactive"}
                   </p>
-                  <p>Whale Level: {walletStatus.whaleLevel}</p>
+                  <p>🐋 Whale Level: {walletStatus.whaleLevel}</p>
                 </AlertDescription>
               </Alert>
             </div>
