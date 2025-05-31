@@ -157,7 +157,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
         setDataGeneral(dataGeneralFetched);
 
         const dataTokensFetched = await responseTokens.json();
-        console.log(dataTokensFetched);
+        console.log("Token Data: ", dataTokensFetched);
         setDataTokens(dataTokensFetched);
 
         const dataTxsFetched = await responseTxs.json();
@@ -173,13 +173,13 @@ export default function ChatInterface({ addressSessionId }: Props) {
         setDataNFTs(dataNFTs.items);
 
         const dataNFTCollections = await responseNFTCollections.json();
-        console.log("NFT Collection Data: ",  dataNFTCollections);
+        console.log("NFT Collection Data: ", dataNFTCollections);
         setDataNFTCollections(dataNFTCollections);
 
         //!Version llamada con todo el json y solo usar ChatGpt para configurar mensaje.
         try {
           const response = await fetch(
-            "https://n8n-demo-u45914.vm.elestio.app/webhook-test/39430311-e25e-4993-a439-f043900c2f4b",
+            "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b",
             {
               method: "POST",
               headers: {
@@ -220,7 +220,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
     if (!addressExtracted) {
       try {
         const response = await fetch(
-          "https://n8n-demo-u45914.vm.elestio.app/webhook-test/39430311-e25e-4993-a439-f043900c2f4b",
+          "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b",
           {
             method: "POST",
             headers: {
@@ -351,15 +351,12 @@ export default function ChatInterface({ addressSessionId }: Props) {
                 </div>
 
                 {/* Token Holdings */}
-                <TopHoldingsChart />
+                <TopHoldingsChart tokenData={dataTokens} />
 
                 {/* Bottom Section */}
                 <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* NFT Holdings */}
                   <NftHoldings data={dataNFTs} />
-
-                  {/* Interactions */}
-                  {/* <Interactions /> */}
                 </div>
               </div>
             </div>
