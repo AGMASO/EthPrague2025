@@ -13,8 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Wallet, Shield, Sparkles } from "lucide-react";
+import { Send, Bot, User, Wallet, Shield, Sparkles, Loader2 } from "lucide-react";
 import SimplePrompt from "./SimplePrompt";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+
 // import PortfolioOverview from "./portfolio-overview"
 // import TokenHoldings from "./token-holdings"
 // import NFTHoldings from "./nft-holdings"
@@ -41,6 +43,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
   // States by Alejandro
   const [answer, setAnswer] = useState("");
+  const [currentAddress, setCurrentAddress] = useState("");
   const [inputMessage, setInputMessage] = useState("");
   const [dataGeneral, setDataGeneral] = useState<any>(null);
   const [dataTokens, setDataTokens] = useState<any>(null);
@@ -50,8 +53,14 @@ export default function ChatInterface({ addressSessionId }: Props) {
   const [dataNFTCollections, setDataNFTCollections] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Wallet status pop-up
+  const [walletStatus, setWalletStatus] = useState<any>(null);
+  const [showWalletStatus, setShowWalletStatus] = useState(false);
+
   // States by me
   const [chatStarted, setChatStarted] = useState(false);
+
+  const [isProving, setIsProving] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,11 +82,12 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
     // Busca una palabra en el mensaje que comience con "0x" (una dirección Ethereum)
     let addressExtracted = await messageSplitted.find(
-      (word) => word.startsWith("0x") && word.length === 42
+      (word: any) => word.startsWith("0x") && word.length === 42
     );
     console.log(addressExtracted);
 
     if (addressExtracted) {
+      setCurrentAddress(addressExtracted);
       try {
         const responseGeneral = await fetch(
           `https://eth.blockscout.com/api/v2/addresses/${addressExtracted}`,
@@ -294,6 +304,47 @@ export default function ChatInterface({ addressSessionId }: Props) {
     return <LoadingSpinner variant="chat" />;
   }
 
+  const runProve = async () => {
+    if (!currentAddress) return;
+    // hide previous status while a new prove is running
+    setShowWalletStatus(false);
+    try {
+      setIsProving(true);
+      const res = await fetch("/api/prove", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ address: currentAddress }),
+      });
+      const j = await res.json();
+      console.log(j);
+
+      // extract wallet status from output string when possible
+      let statusObj: any = null;
+      if (j.ok && typeof j.output === "string") {
+        // grab the last JSON-like block between { }
+        const matches = j.output.match(/\{[\s\S]*?\}/g);
+        if (matches && matches.length) {
+          try {
+            statusObj = JSON.parse(matches[matches.length - 1]);
+          } catch (e) {
+            console.error("Could not parse wallet status JSON", e);
+          }
+        }
+      }
+
+      if (!statusObj) statusObj = j; // fallback to raw response
+
+      setWalletStatus(statusObj);
+      setShowWalletStatus(true);
+      // auto-hide after 6 seconds
+      setTimeout(() => setShowWalletStatus(false), 6000);
+      setIsProving(false);
+    } catch (err) {
+      console.error(err);
+      setIsProving(false);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col h-screen bg-gray-50">
       {!chatStarted ? (
@@ -429,6 +480,21 @@ export default function ChatInterface({ addressSessionId }: Props) {
                   >
                     <Send className="w-4 h-4" />
                   </Button>
+                  <Button
+                    type="button"
+                    onClick={runProve}
+                    disabled={!currentAddress || isProving}
+                    className="bg-purple-500 hover:bg-purple-600 text-white h-12 px-6 rounded-xl flex items-center justify-center gap-2"
+                  >
+                    {isProving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Proving...
+                      </>
+                    ) : (
+                      "Prove"
+                    )}
+                  </Button>
                 </form>
               </div>
             </div>
@@ -437,21 +503,39 @@ export default function ChatInterface({ addressSessionId }: Props) {
                 <div className="max-w-4xl mx-auto">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     {suggestedQuestions.map((question, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
-                        onClick={() => setInputMessage(question)}
-                      >
-                        {question}
-                      </Button>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
+                          onClick={() => setInputMessage(question)}
+                        >
+                          {question}
+                        </Button>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
             )}
           </div>
+          {/* Wallet status pop-up */}
+          {showWalletStatus && walletStatus && (
+            <div className="fixed bottom-24 right-4 z-50 max-w-xs w-full">
+              <Alert>
+                <AlertTitle>
+                  {walletStatus.hasWhaleStatus ? "🐋 Whale Wallet" : "Wallet Status"}
+                </AlertTitle>
+                <AlertDescription className="space-y-1">
+                  <p>
+                    {walletStatus.hasActiveWallet ? "✅ Active" : "⚠️ Inactive"}
+                  </p>
+                  <p>Whale Level: {walletStatus.whaleLevel}</p>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
         </>
       )}
     </div>
