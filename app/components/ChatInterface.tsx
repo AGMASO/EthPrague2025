@@ -361,7 +361,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
                         variant="outline"
                         size="sm"
                         className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
-                        onClick={() => setInputValue(question)}
+                        onClick={() => setInputMessage(question)}
                       >
                         {question}
                       </Button>
@@ -378,7 +378,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
                   <Input
                     placeholder="Ask me anything about this wallet..."
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => setInputMessage(e.target.value)}
                     className="flex-1 h-12 rounded-xl border-gray-300 focus:border-purple-500 focus:ring-purple-500 pr-12 shadow-sm"
                   />
                   <Button
