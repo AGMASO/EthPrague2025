@@ -13,16 +13,11 @@ interface ChartDataItem {
 
 interface PortfolioOverviewProps {
   data: ChartDataItem[];
-  totalValue?: string;
 }
 
 export default function PortfolioOverview({
   data = [],
-  totalValue,
 }: PortfolioOverviewProps) {
-  // Hardcoded total portfolio value for now
-  const hardcodedTotal = "$12,345.67";
-
   // Format number in compact notation (e.g., 1.2B, 3.4M)
   function formatCompactNumber(num: number) {
     if (!isFinite(num)) return "-";
@@ -81,17 +76,6 @@ export default function PortfolioOverview({
               </span>
             </div>
           ))}
-        </div>
-        <div className="mt-4">
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">
-            Total Portfolio Value
-          </h3>
-          <div
-            className="text-5xl font-extrabold mb-2 text-gray-900 max-w-full overflow-x-auto whitespace-nowrap px-2"
-            style={{ fontSize: "2.5rem", maxWidth: 400, margin: "0 auto" }}
-            title={hardcodedTotal}>
-            {hardcodedTotal}
-          </div>
         </div>
       </CardContent>
     </Card>
