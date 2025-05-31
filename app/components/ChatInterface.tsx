@@ -359,25 +359,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
               <NftHoldings data={dataNFTs} />
             </div>
 
-            {/* Assistant Answer Bubble */}
-            {answer && (
-              <div className="flex gap-3 justify-start p-4">
-                <Avatar className="w-8 h-8 bg-purple-100">
-                  <AvatarFallback>
-                    <Bot className="w-4 h-4 text-purple-600" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="max-w-2xl">
-                  <div className="rounded-2xl px-4 py-3 bg-white border border-gray-200 text-gray-900">
-                    <div
-                      className="text-sm leading-relaxed break-words max-w-full overflow-x-auto"
-                      dangerouslySetInnerHTML={{ __html: answer }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex gap-3 justify-start">
@@ -409,6 +390,21 @@ export default function ChatInterface({ addressSessionId }: Props) {
           <div className="bottom-0 left-0 right-0 z-50">
             <div className="px-2 py-3">
               <div className="max-w-3xl mx-auto">
+                {/* Answer bubble aligned with input */}
+                {answer && (
+                  <div className="w-full mb-4">
+                    <div className="rounded-2xl px-4 py-3 bg-white border border-gray-200 text-gray-900 flex items-start gap-3">
+                      <Avatar className="w-8 h-8 bg-purple-100 mt-1">
+                        <AvatarFallback>
+                          <Bot className="w-4 h-4 text-purple-600" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-sm leading-relaxed break-words max-w-full overflow-x-auto">
+                        <div dangerouslySetInnerHTML={{ __html: answer }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <form onSubmit={handleSubmit} className="flex gap-3">
                   <Input
                     placeholder="Ask me anything about this wallet..."
