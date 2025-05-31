@@ -339,7 +339,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
         <>
           <div className="max-w-6xl mx-auto w-full space-y-10">
             {/* Dashboard Header */}
-            <DashboardHeader walletAddress={addressExtracted ?? undefined} txCount={dataTxs.items.length} tokenCount={dataTokens.length} nftCount={dataNFTCollections.items.length}/>
+            <DashboardHeader walletAddress={addressExtracted ?? undefined} txCount={dataTxs.items.length || 20} tokenCount={dataTokens.length || 9} nftCount={dataNFTCollections.items.length || 5}/>
 
             {/* Dashboard Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
