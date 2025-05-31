@@ -3,6 +3,7 @@ import DataCharts from "./DataCharts";
 import WalletInput from "./WalletInput";
 import SimplePrompt from "./SimplePrompt";
 import PortfolioOverview from "./PortfolioOverview";
+import { TopHoldingsChart } from "./TopHoldingsChart";
 interface Props {
   addressSessionId: string;
 }
@@ -220,14 +221,17 @@ const Chat = ({ addressSessionId }: Props) => {
         )}
 
         <SimplePrompt />
-        <PortfolioOverview
-          data={[
-            { name: "BTC", value: 14000, color: "#facc15" },
-            { name: "ETH", value: 12000, color: "#8b5cf6" },
-            { name: "SOL", value: 6000, color: "#22d3ee" },
-          ]}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <PortfolioOverview
+            data={[
+              { name: "BTC", value: 14000, color: "#facc15" },
+              { name: "ETH", value: 12000, color: "#8b5cf6" },
+              { name: "SOL", value: 6000, color: "#22d3ee" },
+            ]}
+          />
 
+          <TopHoldingsChart />
+        </div>
         {/* <form
           className='flex flex-col gap-4 min-w-[600px]'
           onSubmit={handleSubmit}
