@@ -405,6 +405,25 @@ export default function ChatInterface({ addressSessionId }: Props) {
                     </div>
                   </div>
                 )}
+
+                {/* Suggested Questions Buttons - moved up and centered */}
+                {answer && (
+                  <div className="w-full flex justify-center mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full max-w-3xl">
+                      {suggestedQuestions.map((question, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
+                          onClick={() => setInputMessage(question)}>
+                          {question}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="flex gap-3">
                   <Input
                     placeholder="Ask me anything about this wallet..."
@@ -421,24 +440,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
                 </form>
               </div>
             </div>
-            {answer && (
-              <div className="px-4 py-4 border-b border-gray-100">
-                <div className="max-w-4xl mx-auto">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {suggestedQuestions.map((question, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
-                        onClick={() => setInputMessage(question)}>
-                        {question}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </>
       )}
