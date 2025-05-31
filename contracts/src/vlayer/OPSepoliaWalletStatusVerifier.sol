@@ -25,9 +25,7 @@ contract OPSepoliaWalletStatusVerifier is Verifier {
     mapping(address => WhaleStatus) public whaleStatuses;
     mapping(bytes32 => bool) public processedProofs;
 
-    uint256 constant WHALE_THRESHOLD = 10;
-    uint256 constant MEGA_WHALE_THRESHOLD = 100;
-    uint256 constant GIGA_WHALE_THRESHOLD = 1000;
+    uint256 constant WHALE_THRESHOLD = 1;
 
     /* EVENTS */
     event WalletStatusVerified(address indexed account, uint256 ethBalance, bool isWhale, bool isActive);
@@ -54,8 +52,6 @@ contract OPSepoliaWalletStatusVerifier is Verifier {
 
     /* helpers */
     function getWhaleLevel(uint256 ethBalance) public pure returns (string memory) {
-        if (ethBalance >= GIGA_WHALE_THRESHOLD) return "Giga Whale";
-        if (ethBalance >= MEGA_WHALE_THRESHOLD) return "Mega Whale";
         if (ethBalance >= WHALE_THRESHOLD) return "Whale";
         return "Not a Whale";
     }
