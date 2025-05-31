@@ -137,7 +137,8 @@ export function TopHoldingsChart({ tokenData }: { tokenData: TokenData[] }) {
                           fallback.className = `w-12 h-12 rounded-full flex items-center justify-center`;
                           fallback.style.background = token.color;
                           fallback.innerHTML = `<span class="font-bold text-white text-xl">${token.symbol[0]}</span>`;
-                          (e.target as HTMLImageElement).parentNode?.insertBefore(fallback, e.target);
+                          const img = e.target as HTMLImageElement;
+                          img.parentNode?.insertBefore(fallback, img);
                         }}
                       />
                     ) : (
