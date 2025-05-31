@@ -1,5 +1,5 @@
 
-i// app/api/token-prices/route.ts
+// app/api/token-prices/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 

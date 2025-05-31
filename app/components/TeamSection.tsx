@@ -8,7 +8,6 @@ const TeamSection = () => {
   ];
 
   const backendTeam = [
-    { name: "Adam Bryant", role: "Backend Developer" },
     { name: "Gustavo Figueiredo", role: "Backend Developer" },
     { name: "Alejandro Guindo", role: "Backend Developer" },
   ];
@@ -18,10 +17,9 @@ const TeamSection = () => {
       {/* Team Section */}
       <div className="mb-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Unser Team</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Team</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Entwickelt von einem talentierten Team aus Frontend- und
-            Backend-Entwicklern
+            Developed by a talented team of front-end and back-end developers
           </p>
         </div>
 

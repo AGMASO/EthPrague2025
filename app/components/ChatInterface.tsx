@@ -54,6 +54,9 @@ export default function ChatInterface({ addressSessionId }: Props) {
   const [isLoading, setIsLoading] = useState(false);
 
   // States by me
+  const [addressExtracted, setAddressExtracted] = useState<string | null>(
+    null
+  );
   const [chatStarted, setChatStarted] = useState(false);
 
   const scrollToBottom = () => {
@@ -79,6 +82,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
       (word) => word.startsWith("0x") && word.length === 42
     );
     console.log(addressExtracted);
+    setAddressExtracted(addressExtracted || null);
 
     if (addressExtracted) {
       try {
@@ -165,7 +169,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
         setDataTokens(dataTokensFetched);
 
         const dataTxsFetched = await responseTxs.json();
-        console.log(dataTxsFetched);
+        console.log("Transactions Data: ", dataTxsFetched);
         setDataTxs(dataTxsFetched);
 
         const dataChartCoins = await responseChartCoins.json();
@@ -314,7 +318,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
             <form onSubmit={handleSubmit} className="mb-8">
               <div className="relative">
                 <Input
-                  placeholder="z.B. Analysiere die Wallet 0x742d35... oder stelle eine andere Frage..."
+                  placeholder="e.g. Analyze the wallet 0x742d35... or ask another question..."
                   className="w-full h-16 text-lg pl-6 pr-16 rounded-2xl border-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 shadow-sm"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
@@ -335,7 +339,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
         <>
           <div className="max-w-6xl mx-auto w-full space-y-10">
             {/* Dashboard Header */}
-            <DashboardHeader />
+            <DashboardHeader walletAddress={addressExtracted ?? undefined} txCount={dataTxs.items.length} tokenCount={dataTokens.length} nftCount={dataNFTCollections.items.length}/>
 
             {/* Dashboard Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -387,7 +391,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
           </div>
 
           {/* Fixed Bottom Section */}
-          <div className="bottom-0 left-0 right-0 z-50">
+          <div className="bottom-0 left-0 right-0 z-30">
             <div className="px-2 py-3">
               <div className="max-w-3xl mx-auto">
                 {/* Answer bubble aligned with input */}
