@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import React from "react";
+import randomColor from "randomcolor";
 
 interface ChartDataItem {
   name: string;
@@ -19,7 +20,8 @@ export default function PortfolioOverview({
   data = [],
   totalValue,
 }: PortfolioOverviewProps) {
-  const computedTotal = data.reduce((sum, entry) => sum + entry.value, 0);
+  // Hardcoded total portfolio value for now
+  const hardcodedTotal = "$12,345.67";
 
   // Format number in compact notation (e.g., 1.2B, 3.4M)
   function formatCompactNumber(num: number) {
@@ -90,8 +92,8 @@ export default function PortfolioOverview({
           <div
             className="text-5xl font-extrabold mb-2 text-gray-900 max-w-full overflow-x-auto whitespace-nowrap px-2"
             style={{ fontSize: "2.5rem", maxWidth: 400, margin: "0 auto" }}
-            title={totalValue ? totalValue : formatFullNumber(computedTotal)}>
-            {totalValue ? totalValue : `$${formatCompactNumber(computedTotal)}`}
+            title={hardcodedTotal}>
+            {hardcodedTotal}
           </div>
         </div>
       </CardContent>
