@@ -373,11 +373,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
             <form onSubmit={handleSubmit} className="mb-8">
               <div className="relative">
                 <Input
-<<<<<<< HEAD
                   placeholder="e.g. Analyze the wallet 0x742d35... or ask another question..."
-=======
-                  placeholder="z.B. Analysiere die Wallet 0x742d35Cc6635C0532925a3b8D403C oder stelle eine andere Frage..."
->>>>>>> main
                   className="w-full h-16 text-lg pl-6 pr-16 rounded-2xl border-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 shadow-sm"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
