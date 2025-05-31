@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Send, Sparkles } from "lucide-react";
 
-export default function SimplePrompt() {
+interface SimplePromptProps {
+  onClickSubmit: (prompt: string) => void;
+}
+
+export default function SimplePrompt({ onClickSubmit }: SimplePromptProps) {
   const [prompt, setPrompt] = useState("");
 
   const suggestions = [
@@ -23,8 +27,7 @@ export default function SimplePrompt() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (prompt.trim()) {
-      console.log("Prompt submitted:", prompt);
-      // Hier würde die Analyse gestartet werden
+      onClickSubmit(prompt);
     }
   };
 
@@ -42,7 +45,7 @@ export default function SimplePrompt() {
           </div>
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          What do you want to know about a wallet?
+          Enter the Wallet Address you want to analyze
         </h1>
         {/* <p className="text-xl text-gray-600 max-w-2xl mx-auto">
           Ask questions about wallet addresses, transactions or blockchain

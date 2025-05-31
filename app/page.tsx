@@ -4,6 +4,7 @@ import Image from "next/image";
 import NavBarMain from "./components/NavBarMain";
 import { keccak256, toBytes } from "viem";
 import Chat from "./components/Chat";
+import ChatInterface from "./components/ChatInterface";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useAccount } from "wagmi";
@@ -23,18 +24,29 @@ export default function Home() {
   }, [address]);
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
         <NavBarMain />
-        {isConnected ? (
-          <Chat addressSessionId={sessionId as string} />
-        ) : (
-          <Header />
-        )}
-      </main>
-      <footer className="text-xs text-gray-400 mt-4 row-start-3">
-        © 2024 EthPrague2025. All rights reserved.
-      </footer>
+      </div>
+
+      {/* Main Content */}
+      {isConnected ? (
+        // ChatInterface - Full screen layout
+        <div className="h-[calc(100vh-60px)]">
+          <ChatInterface addressSessionId={sessionId as string} />
+        </div>
+      ) : (
+        // Header - Centered layout (wie original)
+        <div className="grid grid-rows-[1fr_auto] items-center justify-items-center min-h-[calc(100vh-60px)] p-8 pb-20 gap-16 sm:p-20">
+          <main className="flex flex-col gap-8 row-start-1 items-center sm:items-start">
+            <Header />
+          </main>
+          <footer className="text-xs text-gray-400 mt-4 row-start-2">
+            © 2024 EthPrague2025. All rights reserved.
+          </footer>
+        </div>
+      )}
     </div>
   );
 }

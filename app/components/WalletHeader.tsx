@@ -1,15 +1,20 @@
-"use client";
-
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, Wallet, BarChart3, Shield } from "lucide-react";
+import { Send, Bot, User, Wallet, Shield } from "lucide-react";
 
-interface DashboardHeaderProps {
-  walletAddress?: string;
+export interface Message {
+  id: string;
+  type: "user" | "assistant" | "wallet-profile";
+  content: string;
+  timestamp: Date;
+  walletData?: any;
 }
 
-export default function DashboardHeader({
-  walletAddress = "0x3A5D...8c40",
-}: DashboardHeaderProps) {
+interface WalletHeaderProps {
+  message: Message;
+}
+
+const WalletHeader: React.FC<WalletHeaderProps> = ({ message }) => {
   return (
     <Card className="bg-white border-gray-200">
       <CardContent className="p-6">
@@ -20,17 +25,17 @@ export default function DashboardHeader({
               Wallet Profile
             </h3>
             <p className="text-gray-600 font-mono text-sm">
-              0x742d35Cc6635C0532925a3b8D403C
+              {message.walletData?.address}
             </p>
           </div>
           <div className="ml-auto text-right">
             <div className="text-2xl font-bold text-gray-900">
-              $52,630.45
+              {message.walletData?.totalValue}
             </div>
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-green-500" />
               <span className="text-sm text-green-600">
-                Low Risk
+                {message.walletData?.riskScore}
               </span>
             </div>
           </div>
@@ -53,4 +58,6 @@ export default function DashboardHeader({
       </CardContent>
     </Card>
   );
-}
+};
+
+export default WalletHeader;
