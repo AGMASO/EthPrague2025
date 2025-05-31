@@ -13,14 +13,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Wallet, Shield, Sparkles, Loader2 } from "lucide-react";
+import { formatTokenData } from "@/utils/tokenParser";
+import {
+  Send,
+  Bot,
+  User,
+  Wallet,
+  Shield,
+  Sparkles,
+  Loader2,
+} from "lucide-react";
 import SimplePrompt from "./SimplePrompt";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { formatTokenData } from "@/utils/tokenParser";
-// import PortfolioOverview from "./portfolio-overview"
-// import TokenHoldings from "./token-holdings"
-// import NFTHoldings from "./nft-holdings"
-// import Interactions from "./interactions"
 
 interface Props {
   addressSessionId: string;
@@ -33,6 +37,9 @@ interface Message {
   timestamp: Date;
   walletData?: any;
 }
+
+const n8n =
+  "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b";
 
 export default function ChatInterface({ addressSessionId }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -188,22 +195,19 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
         //!Version llamada con todo el json y solo usar ChatGpt para configurar mensaje.
         try {
-          const response = await fetch(
-            "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                addressSessionId: addressSessionId,
-                message: message,
-                dataGeneral: dataGeneralFetched,
-                dataTokens: dataTokensFetched,
-                dataTxs: dataTxsFetched,
-              }),
-            }
-          );
+          const response = await fetch(n8n, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              addressSessionId: addressSessionId,
+              message: message,
+              dataGeneral: dataGeneralFetched,
+              dataTokens: dataTokensFetched,
+              dataTxs: dataTxsFetched,
+            }),
+          });
 
           if (!response.ok) {
             throw new Error("Error en el servidor");
@@ -229,22 +233,19 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
     if (!addressExtracted) {
       try {
-        const response = await fetch(
-          "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              addressSessionId,
-              message,
-              dataGeneral: null,
-              dataTokens: null,
-              dataTxs: null,
-            }),
-          }
-        );
+        const response = await fetch(n8n, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            addressSessionId,
+            message,
+            dataGeneral: null,
+            dataTokens: null,
+            dataTxs: null,
+          }),
+        });
 
         if (!response.ok) {
           throw new Error("Error en el servidor");
@@ -346,7 +347,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
   };
   console.log("dataTokens at render:", dataTokens);
 
-
   return (
     <div className="w-full flex flex-col h-screen bg-gray-50">
       {!chatStarted ? (
@@ -378,10 +378,9 @@ export default function ChatInterface({ addressSessionId }: Props) {
                   type="submit"
                   size="sm"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-12 px-4"
-                  disabled={!inputMessage.trim()}
-                >
+                  disabled={!inputMessage.trim()}>
                   <Send className="w-4 h-4" />
-                  <span className="sr-only">Sent</span>
+                  <span className="sr-only">Send</span>
                 </Button>
               </div>
             </form>
@@ -389,77 +388,56 @@ export default function ChatInterface({ addressSessionId }: Props) {
         </div>
       ) : (
         <>
-          {/* Messages Container - with bottom padding for fixed elements */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-44">
-            {/* DASHBOARD INTEGRATION */}
-            <div className="max-w-6xl mx-auto w-full space-y-10">
-              {/* Dashboard Header */}
-              <DashboardHeader />
+          <div className="max-w-6xl mx-auto w-full space-y-10">
+            {/* Dashboard Header */}
+            <DashboardHeader />
 
-              {/* Dashboard Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Portfolio Value Card */}
-                <div className="lg:row-span-2">
-                  <PortfolioOverview />
+            {/* Dashboard Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Portfolio Overview Card */}
+              {!Array.isArray(dataTokens) ? (
+                <div className="text-center text-gray-400 min-h-[500px] flex flex-col flex-1 bg-white border border-gray-200 shadow-sm rounded-2xl justify-center items-center">
+                  Loading token data...
                 </div>
+              ) : dataTokens.length === 0 ? (
+                <div className="text-center text-gray-400 min-h-[500px] flex flex-col flex-1 bg-white border border-gray-200 shadow-sm rounded-2xl justify-center items-center">
+                  No ERC-20 tokens found.
+                </div>
+              ) : (
+                <PortfolioOverview data={formatTokenData(dataTokens)} />
+              )}
 
-                {/* Token Holdings */}
-                <TopHoldingsChart tokenData={dataTokens} />
+              {/* Top Holdings Card */}
+              <TopHoldingsChart tokenData={dataTokens} />
 
-                {/* Bottom Section */}
-                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* NFT Holdings */}
-                  <NftHoldings data={dataNFTs} />
+              {/* NFT Holdings Card */}
+              <NftHoldings data={dataNFTs} />
+            </div>
+          </div>
+          {isTyping && (
+            <div className="flex gap-3 justify-start">
+              <Avatar className="w-8 h-8 bg-purple-100">
+                <AvatarFallback>
+                  <Bot className="w-4 h-4 text-purple-600" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  />
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  />
                 </div>
               </div>
             </div>
-            {/* Assistant Answer Bubble */}
-            {answer && (
-              <div className="flex gap-3 justify-start p-4">
-                {/* Bot Avatar */}
-                <Avatar className="w-8 h-8 bg-purple-100">
-                  <AvatarFallback>
-                    <Bot className="w-4 h-4 text-purple-600" />
-                  </AvatarFallback>
-                </Avatar>
+          )}
 
-                {/* Bubble */}
-                <div className="max-w-2xl">
-                  <div className="rounded-2xl px-4 py-3 bg-white border border-gray-200 text-gray-900">
-                    <div
-                      className="text-sm leading-relaxed break-words max-w-full overflow-x-auto"
-                      dangerouslySetInnerHTML={{ __html: answer }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {isTyping && (
-              <div className="flex gap-3 justify-start">
-                <Avatar className="w-8 h-8 bg-purple-100">
-                  <AvatarFallback>
-                    <Bot className="w-4 h-4 text-purple-600" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div
-                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
-                    ></div>
-                    <div
-                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
+          <div ref={messagesEndRef} />
 
           {/* Fixed Bottom Section */}
           <div className="bottom-0 left-0 right-0 z-50">
@@ -468,6 +446,39 @@ export default function ChatInterface({ addressSessionId }: Props) {
             {/* Input Bar - Fixed at bottom */}
             <div className="px-2 py-3">
               <div className="max-w-3xl mx-auto">
+                {/* Answer bubble aligned with input */}
+                {answer && (
+                  <div className="w-full mb-4">
+                    <div className="rounded-2xl px-4 py-3 bg-white border border-gray-200 text-gray-900 flex items-start gap-3">
+                      <Avatar className="w-8 h-8 bg-purple-100 mt-1">
+                        <AvatarFallback>
+                          <Bot className="w-4 h-4 text-purple-600" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-sm leading-relaxed break-words max-w-full overflow-x-auto">
+                        <div dangerouslySetInnerHTML={{ __html: answer }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Suggested Questions Buttons - moved up and centered */}
+                {answer && (
+                  <div className="w-full flex justify-center mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full max-w-3xl">
+                      {suggestedQuestions.map((question, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
+                          onClick={() => setInputMessage(question)}>
+                          {question}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <form onSubmit={handleSubmit} className="flex gap-3">
                   <Input
                     placeholder="Ask me anything about this wallet..."
@@ -478,16 +489,14 @@ export default function ChatInterface({ addressSessionId }: Props) {
                   <Button
                     type="submit"
                     disabled={!inputMessage.trim() || isTyping}
-                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
-                  >
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl">
                     <Send className="w-4 h-4" />
                   </Button>
                   <Button
                     type="button"
                     onClick={runProve}
                     disabled={!currentAddress || isProving}
-                    className="bg-purple-500 hover:bg-purple-600 text-white h-12 px-6 rounded-xl flex items-center justify-center gap-2"
-                  >
+                    className="bg-purple-500 hover:bg-purple-600 text-white h-12 px-6 rounded-xl flex items-center justify-center gap-2">
                     {isProving ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -500,32 +509,15 @@ export default function ChatInterface({ addressSessionId }: Props) {
                 </form>
               </div>
             </div>
-            {answer && (
-              <div className="px-4 py-4 border-b border-gray-100">
-                <div className="max-w-4xl mx-auto">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {suggestedQuestions.map((question, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
-                        onClick={() => setInputMessage(question)}
-                      >
-                        {question}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
           {/* Wallet status pop-up */}
           {showWalletStatus && walletStatus && (
             <div className="fixed bottom-24 right-4 z-50 max-w-xs w-full">
               <Alert>
                 <AlertTitle>
-                  {walletStatus.hasWhaleStatus ? "🐋 Whale Wallet" : "Wallet Status"}
+                  {walletStatus.hasWhaleStatus
+                    ? "🐋 Whale Wallet"
+                    : "Wallet Status"}
                 </AlertTitle>
                 <AlertDescription className="space-y-1">
                   <p>
