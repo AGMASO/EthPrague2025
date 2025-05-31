@@ -11,7 +11,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Send, Bot, User, Wallet, Shield, Sparkles } from "lucide-react";
 import SimplePrompt from "./SimplePrompt";
-// import PortfolioOverview from "./portfolio-overview"
+import PortfolioOverview from "./PortfolioOverview";
+import { formatTokenData } from "@/utils/tokenParser";
 // import TokenHoldings from "./token-holdings"
 // import NFTHoldings from "./nft-holdings"
 // import Interactions from "./interactions"
@@ -34,6 +35,9 @@ export default function ChatInterface({ addressSessionId }: Props) {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const n8n =
+    "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b";
 
   // States by Alejandro
   const [answer, setAnswer] = useState("");
@@ -117,7 +121,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
               "Content-Type": "application/json",
             },
           }
-        )
+        );
 
         const responseNFTCollections = await fetch(
           `https://eth.blockscout.com/api/v2/addresses/${addressExtracted}/nft/collections`,
@@ -126,7 +130,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
               "Content-Type": "application/json",
             },
           }
-        )
+        );
 
         if (!responseGeneral.ok) {
           throw new Error("Error en el servidor");
@@ -144,7 +148,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
         if (!responseNFTs.ok) {
           throw new Error("Error to get chart coins");
         }
-         if (!responseNFTCollections.ok) {
+        if (!responseNFTCollections.ok) {
           throw new Error("Error to get chart coins");
         }
 
@@ -153,7 +157,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
         setDataGeneral(dataGeneralFetched);
 
         const dataTokensFetched = await responseTokens.json();
-        console.log(dataTokensFetched);
+        console.log("Fetched token data:", dataTokensFetched);
         setDataTokens(dataTokensFetched);
 
         const dataTxsFetched = await responseTxs.json();
@@ -174,22 +178,19 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
         //!Version llamada con todo el json y solo usar ChatGpt para configurar mensaje.
         try {
-          const response = await fetch(
-            "https://n8n-demo-u45914.vm.elestio.app/webhook-test/39430311-e25e-4993-a439-f043900c2f4b",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                addressSessionId: addressSessionId,
-                message: message,
-                dataGeneral: dataGeneralFetched,
-                dataTokens: dataTokensFetched,
-                dataTxs: dataTxsFetched,
-              }),
-            }
-          );
+          const response = await fetch(n8n, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              addressSessionId: addressSessionId,
+              message: message,
+              dataGeneral: dataGeneralFetched,
+              dataTokens: dataTokensFetched,
+              dataTxs: dataTxsFetched,
+            }),
+          });
 
           if (!response.ok) {
             throw new Error("Error en el servidor");
@@ -215,22 +216,19 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
     if (!addressExtracted) {
       try {
-        const response = await fetch(
-          "https://n8n-demo-u45914.vm.elestio.app/webhook-test/39430311-e25e-4993-a439-f043900c2f4b",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              addressSessionId,
-              message,
-              dataGeneral: null,
-              dataTokens: null,
-              dataTxs: null,
-            }),
-          }
-        );
+        const response = await fetch(n8n, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            addressSessionId,
+            message,
+            dataGeneral: null,
+            dataTokens: null,
+            dataTxs: null,
+          }),
+        });
 
         if (!response.ok) {
           throw new Error("Error en el servidor");
@@ -290,13 +288,14 @@ export default function ChatInterface({ addressSessionId }: Props) {
     return <LoadingSpinner variant="chat" />;
   }
 
+  console.log("dataTokens at render:", dataTokens);
+
   return (
     <div className="w-full flex flex-col h-screen bg-gray-50">
       {!chatStarted ? (
+        // Pre-chat view
         <div className="flex-1 flex items-center justify-center p-4">
-          {/* Simple Prompt Mask */}
           <div className="max-w-4xl mx-auto p-6 -mt-28">
-            {/* Header */}
             <div className="text-center mb-12">
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -308,11 +307,10 @@ export default function ChatInterface({ addressSessionId }: Props) {
               </h1>
             </div>
 
-            {/* Prompt Input Field */}
             <form onSubmit={handleSubmit} className="mb-8">
               <div className="relative">
                 <Input
-                  placeholder="z.B. Analysiere die Wallet 0x742d35Cc6635C0532925a3b8D403C oder stelle eine andere Frage..."
+                  placeholder="z.B. Analysiere die Wallet 0x742d35... oder stelle eine andere Frage..."
                   className="w-full h-16 text-lg pl-6 pr-16 rounded-2xl border-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 shadow-sm"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
@@ -321,10 +319,9 @@ export default function ChatInterface({ addressSessionId }: Props) {
                   type="submit"
                   size="sm"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-12 px-4"
-                  disabled={!inputMessage.trim()}
-                >
+                  disabled={!inputMessage.trim()}>
                   <Send className="w-4 h-4" />
-                  <span className="sr-only">Sent</span>
+                  <span className="sr-only">Send</span>
                 </Button>
               </div>
             </form>
@@ -332,19 +329,31 @@ export default function ChatInterface({ addressSessionId }: Props) {
         </div>
       ) : (
         <>
-          {/* Messages Container - with bottom padding for fixed elements */}
+          {/* Messages + Portfolio + Answer */}
           <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-44">
-            {/* Assistant Answer Bubble */}
+            {/* ✅ Portfolio Overview */}
+            <div className="w-full max-w-3xl mx-auto">
+              {!Array.isArray(dataTokens) ? (
+                <div className="text-center text-gray-400">
+                  Loading token data...
+                </div>
+              ) : dataTokens.length === 0 ? (
+                <div className="text-center text-gray-400">
+                  No ERC-20 tokens found.
+                </div>
+              ) : (
+                <PortfolioOverview data={formatTokenData(dataTokens)} />
+              )}
+            </div>
+
+            {/* ✅ Assistant Answer */}
             {answer && (
               <div className="flex gap-3 justify-start p-4">
-                {/* Bot Avatar */}
                 <Avatar className="w-8 h-8 bg-purple-100">
                   <AvatarFallback>
                     <Bot className="w-4 h-4 text-purple-600" />
                   </AvatarFallback>
                 </Avatar>
-
-                {/* Bubble */}
                 <div className="max-w-2xl">
                   <div className="rounded-2xl px-4 py-3 bg-white border border-gray-200 text-gray-900">
                     <div
@@ -356,6 +365,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
               </div>
             )}
 
+            {/* ✅ Typing Indicator */}
             {isTyping && (
               <div className="flex gap-3 justify-start">
                 <Avatar className="w-8 h-8 bg-purple-100">
@@ -368,12 +378,10 @@ export default function ChatInterface({ addressSessionId }: Props) {
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     <div
                       className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
-                    ></div>
+                      style={{ animationDelay: "0.1s" }}></div>
                     <div
                       className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    ></div>
+                      style={{ animationDelay: "0.2s" }}></div>
                   </div>
                 </div>
               </div>
@@ -382,9 +390,8 @@ export default function ChatInterface({ addressSessionId }: Props) {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Fixed Bottom Section */}
+          {/* ✅ Bottom Suggestions + Input */}
           <div className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t">
-            {/* Suggested Questions - Fixed at bottom */}
             {answer && (
               <div className="px-4 py-4 border-b border-gray-100">
                 <div className="max-w-4xl mx-auto">
@@ -395,8 +402,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
                         variant="outline"
                         size="sm"
                         className="text-xs rounded-lg border-gray-300 hover:bg-gray-100 transition-colors justify-start text-left h-auto py-2 px-3"
-                        onClick={() => setInputMessage(question)}
-                      >
+                        onClick={() => setInputMessage(question)}>
                         {question}
                       </Button>
                     ))}
@@ -405,7 +411,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
               </div>
             )}
 
-            {/* Input Bar - Fixed at bottom */}
             <div className="px-4 py-6">
               <div className="max-w-3xl mx-auto">
                 <form onSubmit={handleSubmit} className="flex gap-3">
@@ -418,8 +423,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
                   <Button
                     type="submit"
                     disabled={!inputValue.trim() || isTyping}
-                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
-                  >
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl">
                     <Send className="w-4 h-4" />
                   </Button>
                 </form>
