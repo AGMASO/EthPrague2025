@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import DataCharts from "./DataCharts";
+import WalletInput from "./WalletInput";
+import SimplePrompt from "./SimplePrompt";
 interface Props {
   addressSessionId: string;
 }
@@ -215,7 +217,10 @@ const Chat = ({ addressSessionId }: Props) => {
             dangerouslySetInnerHTML={{ __html: answer }}
           />
         )}
-        <form
+
+       <SimplePrompt />
+
+        {/* <form
           className='flex flex-col gap-4 min-w-[600px]'
           onSubmit={handleSubmit}
         >
@@ -235,7 +240,7 @@ const Chat = ({ addressSessionId }: Props) => {
           >
             {isLoading ? "Thinking..." : "Send"}
           </button>
-        </form>
+        </form> */}
       </div>
     </div>
   );
