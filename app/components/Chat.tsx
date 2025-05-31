@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import DataCharts from "./DataCharts";
 import WalletInput from "./WalletInput";
 import SimplePrompt from "./SimplePrompt";
+
 interface Props {
   addressSessionId: string;
 }
+
+const exampleNftData = [
+  { name: "CryptoPunks", icon: "🧑‍🎤", count: 2 },
+  { name: "Bored Apes", icon: "🐵", count: 1 },
+  { name: "Art Blocks", icon: "🎨", count: 3 },
+];
 
 const Chat = ({ addressSessionId }: Props) => {
   const [answer, setAnswer] = useState("");
@@ -203,22 +210,22 @@ const Chat = ({ addressSessionId }: Props) => {
   }
 
   return (
-    <div className='w-full flex flex-col items-center justify-center min-h-[50vh]'>
+    <div className="w-full flex flex-col items-center justify-center min-h-[50vh]">
       <DataCharts
         tokens={dataTokens}
         transactions={dataTxs}
         addressInfo={dataGeneral}
         chartCoins={dataChartCoins}
       />
-      <div className='w-full max-w-4xl flex flex-col gap-4'>
+      <div className="w-full max-w-4xl flex flex-col gap-4">
         {answer && (
           <div
-            className='p-4 rounded-md border border-gray-300 w-full break-words max-w-full overflow-x-auto'
+            className="p-4 rounded-md border border-gray-300 w-full break-words max-w-full overflow-x-auto"
             dangerouslySetInnerHTML={{ __html: answer }}
           />
         )}
 
-       <SimplePrompt />
+        <SimplePrompt />
 
         {/* <form
           className='flex flex-col gap-4 min-w-[600px]'
