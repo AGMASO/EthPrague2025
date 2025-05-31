@@ -5,6 +5,10 @@ import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import WalletHeader from "./WalletHeader";
 import LoadingSpinner from "./LoadingSpinner";
+import DashboardHeader from "./DashboardHeader";
+import { NftHoldings } from "./NFTHoldings";
+import PortfolioOverview from "./PortfolioOverview";
+import { TopHoldingsChart } from "./TopHoldingsChart";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -117,7 +121,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
               "Content-Type": "application/json",
             },
           }
-        )
+        );
 
         const responseNFTCollections = await fetch(
           `https://eth.blockscout.com/api/v2/addresses/${addressExtracted}/nft/collections`,
@@ -126,7 +130,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
               "Content-Type": "application/json",
             },
           }
-        )
+        );
 
         if (!responseGeneral.ok) {
           throw new Error("Error en el servidor");
@@ -144,7 +148,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
         if (!responseNFTs.ok) {
           throw new Error("Error to get chart coins");
         }
-         if (!responseNFTCollections.ok) {
+        if (!responseNFTCollections.ok) {
           throw new Error("Error to get chart coins");
         }
 
@@ -165,11 +169,11 @@ export default function ChatInterface({ addressSessionId }: Props) {
         setDataChartCoins(dataChartCoins);
 
         const dataNFTs = await responseNFTs.json();
-        console.log(dataNFTs);
-        setDataNFTs(dataNFTs);
+        console.log("NFT Data: ", dataNFTs);
+        setDataNFTs(dataNFTs.items);
 
         const dataNFTCollections = await responseNFTCollections.json();
-        console.log(dataNFTCollections);
+        console.log("NFT Collection Data: ",  dataNFTCollections);
         setDataNFTCollections(dataNFTCollections);
 
         //!Version llamada con todo el json y solo usar ChatGpt para configurar mensaje.
@@ -334,6 +338,31 @@ export default function ChatInterface({ addressSessionId }: Props) {
         <>
           {/* Messages Container - with bottom padding for fixed elements */}
           <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-44">
+            {/* DASHBOARD INTEGRATION */}
+            <div className="max-w-6xl mx-auto w-full space-y-10">
+              {/* Dashboard Header */}
+              <DashboardHeader />
+
+              {/* Dashboard Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Portfolio Value Card */}
+                <div className="lg:row-span-2">
+                  <PortfolioOverview />
+                </div>
+
+                {/* Token Holdings */}
+                <TopHoldingsChart />
+
+                {/* Bottom Section */}
+                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* NFT Holdings */}
+                  <NftHoldings data={dataNFTs} />
+
+                  {/* Interactions */}
+                  {/* <Interactions /> */}
+                </div>
+              </div>
+            </div>
             {/* Assistant Answer Bubble */}
             {answer && (
               <div className="flex gap-3 justify-start p-4">
@@ -383,8 +412,29 @@ export default function ChatInterface({ addressSessionId }: Props) {
           </div>
 
           {/* Fixed Bottom Section */}
-          <div className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-md border-t">
+          <div className="bottom-0 left-0 right-0 z-50">
             {/* Suggested Questions - Fixed at bottom */}
+
+            {/* Input Bar - Fixed at bottom */}
+            <div className="px-2 py-3">
+              <div className="max-w-3xl mx-auto">
+                <form onSubmit={handleSubmit} className="flex gap-3">
+                  <Input
+                    placeholder="Ask me anything about this wallet..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    className="flex-1 h-12 rounded-xl bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500 pr-12 shadow-sm"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={!inputMessage.trim() || isTyping}
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </form>
+              </div>
+            </div>
             {answer && (
               <div className="px-4 py-4 border-b border-gray-100">
                 <div className="max-w-4xl mx-auto">
@@ -404,27 +454,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
                 </div>
               </div>
             )}
-
-            {/* Input Bar - Fixed at bottom */}
-            <div className="px-4 py-6">
-              <div className="max-w-3xl mx-auto">
-                <form onSubmit={handleSubmit} className="flex gap-3">
-                  <Input
-                    placeholder="Ask me anything about this wallet..."
-                    value={inputValue}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    className="flex-1 h-12 rounded-xl border-gray-300 focus:border-purple-500 focus:ring-purple-500 pr-12 shadow-sm"
-                  />
-                  <Button
-                    type="submit"
-                    disabled={!inputValue.trim() || isTyping}
-                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </form>
-              </div>
-            </div>
           </div>
         </>
       )}

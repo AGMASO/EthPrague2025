@@ -13,16 +13,70 @@ interface NftHoldingsProps {
 }
 
 export function NftHoldings({ data }: NftHoldingsProps) {
-  const nftData =
-    data ??
-    [
-      // Example fallback if no prop is passed
-      // { name: "CryptoPunks", icon: "🧑‍🎤", count: 2 },
-      // { name: "Bored Apes", icon: "🐵", count: 1 },
-      // { name: "Art Blocks", icon: "🎨", count: 3 },
-    ];
+  type NFTCollection = {
+    name: string;
+    items: number;
+    icon: string;
+    iconUrl?: string;
+  };
 
-  const isEmpty = nftData.length === 0;
+  const emojiFallbacks: { [key: string]: string } = {
+    Punk: "🎭",
+    Ape: "🐵",
+    Art: "🎨",
+    Block: "🧱",
+    Cat: "🐱",
+    Dog: "🐶",
+    Moon: "🌙",
+    Alien: "👽",
+  };
+
+  function getIconFromName(name: string): string {
+    const entry = Object.entries(emojiFallbacks).find(([keyword]) =>
+      name.toLowerCase().includes(keyword.toLowerCase())
+    );
+    return entry ? entry[1] : "🖼️"; // Default NFT icon
+  }
+
+  function transformToNFTCollections(items: any[]): NFTCollection[] {
+    const grouped: {
+      [collectionName: string]: {
+        count: number;
+        name: string;
+        iconUrl?: string; 
+      };
+    } = {};
+
+    for (const item of items) {
+      const tokenName = item.token?.name || "Unknown Collection";
+      const imageUrl = item.image_url || item.media_url; 
+
+      if (!grouped[tokenName]) {
+        grouped[tokenName] = {
+          count: 1,
+          name: tokenName,
+          iconUrl: imageUrl, 
+        };
+      } else {
+        grouped[tokenName].count++;
+        // Falls noch keine iconUrl gesetzt ist, setze sie jetzt
+        if (!grouped[tokenName].iconUrl && imageUrl) {
+          grouped[tokenName].iconUrl = imageUrl;
+        }
+      }
+    }
+
+    return Object.values(grouped).map(({ name, count, iconUrl }) => ({
+      name,
+      items: count,
+      icon: getIconFromName(name), // Fallback-Emoji behalten
+      iconUrl, // Bild-URL hinzufügen
+    }));
+  }
+
+  const nftCollections: NFTCollection[] = transformToNFTCollections(data ?? []);
+
+  const isEmpty = nftCollections.length === 0;
 
   return (
     <Card className="bg-white border-gray-200 shadow-sm rounded-2xl min-h-[500px] flex flex-col">
@@ -47,17 +101,17 @@ export function NftHoldings({ data }: NftHoldingsProps) {
               <div className="text-right">ITEMS</div>
             </div>
             <div className="space-y-4">
-              {nftData.map((nft, index) => (
+              {nftCollections.slice(0, 5).map((nft, index) => (
                 <div key={index} className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-md flex items-center justify-center text-lg bg-slate-100">
-                      {nft.icon}
+                      <img src={nft.iconUrl} alt="" />
                     </div>
                     <span className="font-medium text-gray-900">
                       {nft.name}
                     </span>
                   </div>
-                  <span className="font-medium text-gray-900">{nft.count}</span>
+                  <span className="font-medium text-gray-900">{nft.items}</span>
                 </div>
               ))}
             </div>
