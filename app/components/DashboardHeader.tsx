@@ -31,7 +31,7 @@ export default function DashboardHeader({
               {walletAddress}
             </p>
           </div>
-          <div className="ml-auto text-right">
+          {/* <div className="ml-auto text-right">
             <div className="text-2xl font-bold text-gray-900">
               {totalValue}
             </div>
@@ -41,12 +41,12 @@ export default function DashboardHeader({
                 Low Risk
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-lg font-semibold text-gray-900">{txCount}</div>
+            <div className="text-lg font-semibold text-gray-900">+{txCount}</div>
             <div className="text-sm text-gray-500">Transactions</div>
           </div>
           <div>
