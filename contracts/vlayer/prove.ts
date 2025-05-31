@@ -3,7 +3,7 @@ import proverSpec from "../out/OPSepoliaWalletStatusProver.sol/OPSepoliaWalletSt
 import verifierSpec from "../out/OPSepoliaWalletStatusVerifier.sol/OPSepoliaWalletStatusVerifier";
 import { createContext, getConfig, waitForTransactionReceipt } from "@vlayer/sdk/config";
 
-async function main() {
+export async function main() {
   const config = getConfig();
   console.log(`Running on chain: ${config.chainName}`);
 
