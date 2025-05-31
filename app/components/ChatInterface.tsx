@@ -65,9 +65,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
   const [showWalletStatus, setShowWalletStatus] = useState(false);
 
   // States by me
-  const [addressExtracted, setAddressExtracted] = useState<string | null>(
-    null
-  );
+  const [addressExtracted, setAddressExtracted] = useState<string | null>(null);
   const [chatStarted, setChatStarted] = useState(false);
 
   const [isProving, setIsProving] = useState(false);
@@ -394,7 +392,12 @@ export default function ChatInterface({ addressSessionId }: Props) {
         <>
           <div className="max-w-6xl mx-auto w-full space-y-10">
             {/* Dashboard Header */}
-            <DashboardHeader walletAddress={addressExtracted ?? undefined} txCount={dataTxs.items.length} tokenCount={dataTokens.length} nftCount={dataNFTCollections.items.length}/>
+            <DashboardHeader
+              walletAddress={addressExtracted ?? undefined}
+              txCount={dataTxs.items.length}
+              tokenCount={dataTokens.length}
+              nftCount={dataNFTCollections.items.length}
+            />
 
             {/* Dashboard Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -444,14 +447,7 @@ export default function ChatInterface({ addressSessionId }: Props) {
           <div ref={messagesEndRef} />
 
           {/* Fixed Bottom Section */}
-<<<<<<< HEAD
           <div className="bottom-0 left-0 right-0 z-30">
-=======
-          <div className="bottom-0 left-0 right-0 z-50">
-            {/* Suggested Questions - Fixed at bottom */}
-
-            {/* Input Bar - Fixed at bottom */}
->>>>>>> main
             <div className="px-2 py-3">
               <div className="max-w-3xl mx-auto">
                 {/* Answer bubble aligned with input */}
