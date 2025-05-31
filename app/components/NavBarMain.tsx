@@ -42,7 +42,7 @@ export default function NavBarMain() {
         className={`
           fixed top-0 left-0 right-0 w-full
           flex items-center justify-between p-6
-          transition-all duration-500 ease-in-out z-30
+          transition-all duration-500 ease-in-out z-50
           ${
             isVisible
               ? "opacity-100 translate-y-0"
