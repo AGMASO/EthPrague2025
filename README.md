@@ -36,7 +36,7 @@ Extra Fun Feature: We use Vlayer to proof if the address that you are researchin
 | Layer | What We Use | Notes |
 |-------|-------------|-------|
 | **LLM Orchestration** | **Model Context Protocol** and **n8n** for automation | Thanks to n8n server we run AI agents that have context of APIs sets such as Blockscout or 1Inch |
-| **Blockchain Data** | **Blockscout MCP** – <https://www.npmjs.com/package/@0xagmaso/blockscout-mcp> | Indexed address & txn data for MAINNET chain with Blockscout. |
+| **Blockchain Data** | **Blockscout MCP npm package used** – <https://www.npmjs.com/package/@0xagmaso/blockscout-mcp> | Indexed address & txn data for MAINNET chain with Blockscout. |
 | **Price Feeds** | **Flare MCP** – <https://github.com/AGMASO/flare-mcp> | Fetches FTSO V2 feeds (FLR, BTC, ETH / USD). |
 | **1inch MCP** – |https://github.com/figtracer/1inch-mpc-server/tree/master | DeFi token prices via the 1inch Fusion oracle. |
 | **Frontend**                          || React + shadcn/ui + Tailwind  |
@@ -59,7 +59,7 @@ Extra Fun Feature: We use Vlayer to proof if the address that you are researchin
 | **DISCORD / TELEGRAM** | Discord: `0xagmaso, figtracer, christopherus, dmdm`  |
 | **REPOSITORY** | https://github.com/AGMASO/EthPrague2025 |
 | **VIDEO DEMO / SLIDES** | Video: `<link>` |
-| **DEPLOYMENTS** | <br>InspectiFI: `0x…`<br>BlockscoutMCP: https://www.npmjs.com/package/@0xagmaso/blockscout-mcp <br>FlareMCP: https://github.com/AGMASO/flare-mcp <br>1InchMCP:     https://github.com/figtracer/1inch-mpc-server/tree/master
+| **DEPLOYMENTS** | <br>InspectiFI: `0x…`<br>FlareMCP: https://github.com/AGMASO/flare-mcp <br>1InchMCP:     https://github.com/figtracer/1inch-mpc-server/tree/master BlockscoutMCP package used: https://www.npmjs.com/package/@0xagmaso/blockscout-mcp <br>
 
 ---
 
