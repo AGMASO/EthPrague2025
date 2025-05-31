@@ -26,8 +26,8 @@ contract OPSepoliaWalletStatusProver is Prover {
         }
 
         /* Determine status */
-        bool isWhale = ethBalance >= 100;
-        bool isActive = ethBalanceWei > 0.01 ether || totalBalance / iterations > 100;
+        bool isWhale = ethBalance >= 1;
+        bool isActive = ethBalanceWei > 0.01 ether || totalBalance / iterations > 1;
 
         return (proof(), account, ethBalance, isWhale, isActive);
     }

@@ -13,12 +13,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Wallet, Shield, Sparkles } from "lucide-react";
-import SimplePrompt from "./SimplePrompt";
 import { formatTokenData } from "@/utils/tokenParser";
-// import TokenHoldings from "./token-holdings"
-// import NFTHoldings from "./nft-holdings"
-// import Interactions from "./interactions"
+import {
+  Send,
+  Bot,
+  User,
+  Wallet,
+  Shield,
+  Sparkles,
+  Loader2,
+} from "lucide-react";
+import SimplePrompt from "./SimplePrompt";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface Props {
   addressSessionId: string;
@@ -32,6 +38,9 @@ interface Message {
   walletData?: any;
 }
 
+const n8n =
+  "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b";
+
 export default function ChatInterface({ addressSessionId }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   // States by AI
@@ -39,11 +48,9 @@ export default function ChatInterface({ addressSessionId }: Props) {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const n8n =
-    "https://n8n-demo-u45914.vm.elestio.app/webhook/39430311-e25e-4993-a439-f043900c2f4b";
-
   // States by Alejandro
   const [answer, setAnswer] = useState("");
+  const [currentAddress, setCurrentAddress] = useState("");
   const [inputMessage, setInputMessage] = useState("");
   const [dataGeneral, setDataGeneral] = useState<any>(null);
   const [dataTokens, setDataTokens] = useState<any>(null);
@@ -53,11 +60,17 @@ export default function ChatInterface({ addressSessionId }: Props) {
   const [dataNFTCollections, setDataNFTCollections] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Wallet status pop-up
+  const [walletStatus, setWalletStatus] = useState<any>(null);
+  const [showWalletStatus, setShowWalletStatus] = useState(false);
+
   // States by me
   const [addressExtracted, setAddressExtracted] = useState<string | null>(
     null
   );
   const [chatStarted, setChatStarted] = useState(false);
+
+  const [isProving, setIsProving] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,12 +92,13 @@ export default function ChatInterface({ addressSessionId }: Props) {
 
     // Busca una palabra en el mensaje que comience con "0x" (una dirección Ethereum)
     let addressExtracted = await messageSplitted.find(
-      (word) => word.startsWith("0x") && word.length === 42
+      (word: any) => word.startsWith("0x") && word.length === 42
     );
     console.log(addressExtracted);
     setAddressExtracted(addressExtracted || null);
 
     if (addressExtracted) {
+      setCurrentAddress(addressExtracted);
       try {
         const responseGeneral = await fetch(
           `https://eth.blockscout.com/api/v2/addresses/${addressExtracted}`,
@@ -164,7 +178,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
         setDataGeneral(dataGeneralFetched);
 
         const dataTokensFetched = await responseTokens.json();
-        console.log("Fetched token data:", dataTokensFetched);
         console.log("Token Data: ", dataTokensFetched);
         setDataTokens(dataTokensFetched);
 
@@ -296,14 +309,55 @@ export default function ChatInterface({ addressSessionId }: Props) {
     return <LoadingSpinner variant="chat" />;
   }
 
+  const runProve = async () => {
+    if (!currentAddress) return;
+    // hide previous status while a new prove is running
+    setShowWalletStatus(false);
+    try {
+      setIsProving(true);
+      const res = await fetch("/api/prove", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ address: currentAddress }),
+      });
+      const j = await res.json();
+      console.log(j);
+
+      // extract wallet status from output string when possible
+      let statusObj: any = null;
+      if (j.ok && typeof j.output === "string") {
+        // grab the last JSON-like block between { }
+        const matches = j.output.match(/\{[\s\S]*?\}/g);
+        if (matches && matches.length) {
+          try {
+            statusObj = JSON.parse(matches[matches.length - 1]);
+          } catch (e) {
+            console.error("Could not parse wallet status JSON", e);
+          }
+        }
+      }
+
+      if (!statusObj) statusObj = j; // fallback to raw response
+
+      setWalletStatus(statusObj);
+      setShowWalletStatus(true);
+      // auto-hide after 6 seconds
+      setTimeout(() => setShowWalletStatus(false), 6000);
+      setIsProving(false);
+    } catch (err) {
+      console.error(err);
+      setIsProving(false);
+    }
+  };
   console.log("dataTokens at render:", dataTokens);
 
   return (
     <div className="w-full flex flex-col h-screen bg-gray-50">
       {!chatStarted ? (
-        // Pre-chat view
         <div className="flex-1 flex items-center justify-center p-4">
+          {/* Simple Prompt Mask */}
           <div className="max-w-4xl mx-auto p-6 -mt-28">
+            {/* Header */}
             <div className="text-center mb-12">
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -315,10 +369,15 @@ export default function ChatInterface({ addressSessionId }: Props) {
               </h1>
             </div>
 
+            {/* Prompt Input Field */}
             <form onSubmit={handleSubmit} className="mb-8">
               <div className="relative">
                 <Input
+<<<<<<< HEAD
                   placeholder="e.g. Analyze the wallet 0x742d35... or ask another question..."
+=======
+                  placeholder="z.B. Analysiere die Wallet 0x742d35Cc6635C0532925a3b8D403C oder stelle eine andere Frage..."
+>>>>>>> main
                   className="w-full h-16 text-lg pl-6 pr-16 rounded-2xl border-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 shadow-sm"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
@@ -362,36 +421,41 @@ export default function ChatInterface({ addressSessionId }: Props) {
               {/* NFT Holdings Card */}
               <NftHoldings data={dataNFTs} />
             </div>
-
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="flex gap-3 justify-start">
-                <Avatar className="w-8 h-8 bg-purple-100">
-                  <AvatarFallback>
-                    <Bot className="w-4 h-4 text-purple-600" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                    <div
-                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
-                    />
-                    <div
-                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    />
-                  </div>
+          </div>
+          {isTyping && (
+            <div className="flex gap-3 justify-start">
+              <Avatar className="w-8 h-8 bg-purple-100">
+                <AvatarFallback>
+                  <Bot className="w-4 h-4 text-purple-600" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  />
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  />
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            <div ref={messagesEndRef} />
-          </div>
+          <div ref={messagesEndRef} />
 
           {/* Fixed Bottom Section */}
+<<<<<<< HEAD
           <div className="bottom-0 left-0 right-0 z-30">
+=======
+          <div className="bottom-0 left-0 right-0 z-50">
+            {/* Suggested Questions - Fixed at bottom */}
+
+            {/* Input Bar - Fixed at bottom */}
+>>>>>>> main
             <div className="px-2 py-3">
               <div className="max-w-3xl mx-auto">
                 {/* Answer bubble aligned with input */}
@@ -427,7 +491,6 @@ export default function ChatInterface({ addressSessionId }: Props) {
                     </div>
                   </div>
                 )}
-
                 <form onSubmit={handleSubmit} className="flex gap-3">
                   <Input
                     placeholder="Ask me anything about this wallet..."
@@ -441,10 +504,42 @@ export default function ChatInterface({ addressSessionId }: Props) {
                     className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl">
                     <Send className="w-4 h-4" />
                   </Button>
+                  <Button
+                    type="button"
+                    onClick={runProve}
+                    disabled={!currentAddress || isProving}
+                    className="bg-purple-500 hover:bg-purple-600 text-white h-12 px-6 rounded-xl flex items-center justify-center gap-2">
+                    {isProving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Proving...
+                      </>
+                    ) : (
+                      "Prove"
+                    )}
+                  </Button>
                 </form>
               </div>
             </div>
           </div>
+          {/* Wallet status pop-up */}
+          {showWalletStatus && walletStatus && (
+            <div className="fixed bottom-24 right-4 z-50 max-w-xs w-full">
+              <Alert>
+                <AlertTitle>
+                  {walletStatus.hasWhaleStatus
+                    ? "🐋 Whale Wallet"
+                    : "Wallet Status"}
+                </AlertTitle>
+                <AlertDescription className="space-y-1">
+                  <p>
+                    {walletStatus.hasActiveWallet ? "✅ Active" : "⚠️ Inactive"}
+                  </p>
+                  <p>Whale Level: {walletStatus.whaleLevel}</p>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
         </>
       )}
     </div>

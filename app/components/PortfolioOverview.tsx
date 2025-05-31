@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import React from "react";
 import randomColor from "randomcolor";
@@ -54,13 +54,12 @@ export default function PortfolioOverview({
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={70}
-                outerRadius={90}
-                paddingAngle={2}
-                dataKey="value"
-                stroke="none">
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                labelLine={false}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value">
+                {data.map((entry) => (
+                  <Cell key={entry.name} fill={entry.color} />
                 ))}
               </Pie>
             </PieChart>
@@ -83,8 +82,7 @@ export default function PortfolioOverview({
             </div>
           ))}
         </div>
-        {/* Portfolio value */}
-        <div className="text-center mt-6">
+        <div className="mt-4">
           <h3 className="text-xl font-semibold mb-2 text-gray-900">
             Total Portfolio Value
           </h3>
