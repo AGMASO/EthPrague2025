@@ -9,6 +9,8 @@ It lets anyone—regardless of technical depth—ask natural-language questions 
 Thanks to an **MCP (Model Context Protocol) server layer** and Blockscout + 1Inch we connect LLM prompts to real-time data APIs, eliminating the lag and uncertainty of stale snapshots.  
 We can solve typical question even tricky ones, get surprised with the result!
 
+**VIDEO DEMO**  Video: https://youtu.be/vhKJePlOj2o
+
 * “What tokens were involved in Tx hash `0x…`?”
 * “Make me a full report about this address `0x…`?”
 * “What tokens were involved in hash `0x…`?”
@@ -58,8 +60,8 @@ Extra Fun Feature: We use Vlayer to proof if the address that you are researchin
 | **DESCRIPTION** | Conversational analytics assistant delivering real-time blockchain intelligence through MCP-powered tools. |
 | **DISCORD / TELEGRAM** | Discord: `0xagmaso, figtracer, christopherus, dmdm`  |
 | **REPOSITORY** | https://github.com/AGMASO/EthPrague2025 |
-| **VIDEO DEMO / SLIDES** | Video: `<link>` |
-| **DEPLOYMENTS** | <br>InspectiFI: `0x…`<br>FlareMCP: https://github.com/AGMASO/flare-mcp <br>1InchMCP:     https://github.com/figtracer/1inch-mpc-server/tree/master BlockscoutMCP package used: https://www.npmjs.com/package/@0xagmaso/blockscout-mcp <br>
+| **VIDEO DEMO / SLIDES** | Video: https://youtu.be/vhKJePlOj2o|
+| **DEPLOYMENTS** | <br><br>FlareMCP: https://github.com/AGMASO/flare-mcp <br>1InchMCP:     https://github.com/figtracer/1inch-mpc-server/tree/master BlockscoutMCP package used: https://www.npmjs.com/package/@0xagmaso/blockscout-mcp <br>
 
 ---
 
