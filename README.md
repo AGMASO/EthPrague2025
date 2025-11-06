@@ -40,7 +40,7 @@ Extra Fun Feature: We use Vlayer to proof if the address that you are researchin
 | **LLM Orchestration** | **Model Context Protocol** and **n8n** for automation | Thanks to n8n server we run AI agents that have context of APIs sets such as Blockscout or 1Inch |
 | **Blockchain Data** | **Blockscout MCP npm package used** – <https://www.npmjs.com/package/@0xagmaso/blockscout-mcp> | Indexed address & txn data for MAINNET chain with Blockscout. |
 | **Price Feeds** | **Flare MCP** – <https://github.com/AGMASO/flare-mcp> | Fetches FTSO V2 feeds (FLR, BTC, ETH / USD). |
-| **1inch MCP** – |https://github.com/figtracer/1inch-mpc-server/tree/master | DeFi token prices via the 1inch Fusion oracle. |
+| **1inch MCP** – |https://github.com/figtracer/1inch-mcp-server | DeFi token prices via the 1inch Fusion oracle. |
 | **Frontend**                          || React + shadcn/ui + Tailwind  |
 | **Backend** || MongoDB | 
 ---
